@@ -1,0 +1,27 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int i = 0;
+}
+<h1>Выберите нужный предмет и группу</h1>
+
+<table>
+    <thead>
+        <td>№</td>
+        <td>Название предмета</td>
+        <td>Группа</td>
+        <td>Выбор</td>
+    </thead>
+
+    @foreach (var it in @ViewBag.GP)
+   {
+       <tr>
+           <td>@(i = i + 1)</td>
+           <td>@it.NamePredmet</td>
+           <td>@it.NameGroup</td>
+           <td><a href="~/Teacher/ShowGrade2?id=@it.Id">=></a></td>
+       </tr>
+   }
+
+</table>

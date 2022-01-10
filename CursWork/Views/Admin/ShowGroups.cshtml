@@ -1,0 +1,21 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int i = 0;
+}
+<h1>Список всех групп</h1>
+<table>
+    <thead>
+        <td>№</td>
+        <td>Название группы</td>
+    </thead>
+
+    @foreach (var item in ViewBag.Groups)
+   {
+       <tr>
+           <td>@(i = i + 1)</td>
+           <td><a href="~/Admin/ShowStudent?id=@item.IdGroup">@item.GroupName</a></td>
+       </tr>
+   }
+</table>

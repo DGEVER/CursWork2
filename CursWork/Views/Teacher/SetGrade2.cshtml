@@ -1,0 +1,35 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int i = 0;
+}
+<h1>Оценки</h1>
+
+<table>
+    <thead>
+        <td>№</td>
+        <td>Фамилия</td>
+        <td>Имя</td>
+        <td>Отчество</td>
+        <td>Оценка</td>
+    </thead>
+
+    @foreach (var it in @ViewBag.Course)
+   {
+       <tr>
+           <td>@(i = i + 1)</td>
+           <td>@it.Surname</td>
+           <td>@it.Name</td>
+           <td>@it.SecondName</td>
+           @if(@it.Mark == null)
+           {
+               <td><a href="~/Teacher/SetGrade3?id=@ViewBag.id_exam&id_student=@it.ID_student&id_type=@ViewBag.Type">=></a></td>
+           }
+           else
+           {
+               <td><a href="~/Teacher/ChangeGrade1?id=@ViewBag.id_exam&id_student=@it.ID_student&id_type=@ViewBag.Type">@it.Mark</a></td>
+           }
+       </tr>
+   }
+</table>

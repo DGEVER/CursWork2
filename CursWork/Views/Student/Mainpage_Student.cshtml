@@ -1,0 +1,48 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>Добро пожаловать, студент!</h1>
+<table>
+    <tr>
+        <td>Фамилия</td>
+        <td>@ViewBag.Surname</td>
+    </tr>
+
+    <tr>
+        <td>Имя</td>
+        <td>@ViewBag.Name</td>
+    </tr>
+
+    <tr>
+        <td>Отчество</td>
+        <td>@ViewBag.SecondName</td>
+    </tr>
+
+    <tr>
+        <td>Группа</td>
+        <td>@ViewBag.Group</td>
+    </tr>
+
+    <tr>
+        <td>Специальность</td>
+        <td>@ViewBag.Spec</td>
+    </tr>
+
+    <tr>
+        <td>Форма обучения</td>
+        <td>@ViewBag.Form</td>
+    </tr>
+
+</table>
+<form asp-action="Grade" asp-controller="Student">
+    <div class="form-group">
+        <input type="submit" value="Показать оценки" class="btn btn-default" />
+    </div>
+</form>
+<form asp-action="ShowPredmets" asp-controller="Student">
+    <div class="form-group">
+        <input type="submit" value="Показать предметы" class="btn btn-default" />
+    </div>
+</form>

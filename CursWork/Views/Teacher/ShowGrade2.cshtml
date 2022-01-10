@@ -1,0 +1,31 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int i = 0;
+}
+<h1>Оценки группы @ViewBag.NameGroup по дисциплине @ViewBag.NamePredmet</h1>
+
+<table>
+    <thead>
+        <td>№</td>
+        <td>Фамилия</td>
+        <td>Имя</td>
+        <td>Отчество</td>
+        <td>Оценка</td>
+        <td>Дата</td>
+    </thead>
+
+    @foreach (var it in @ViewBag.CG)
+   {
+       <tr>
+           <td>@(i = i + 1)</td>
+           <td>@it.Surname</td>
+           <td>@it.Name</td>
+           <td>@it.SecondName</td>
+           <td>@it.Mark</td>
+           <td>@it.Date</td>
+       </tr>
+   }
+
+</table>

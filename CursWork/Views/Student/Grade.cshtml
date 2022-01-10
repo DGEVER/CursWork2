@@ -1,0 +1,40 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int i = 0;
+}
+<h1>Успеваемость</h1>
+
+<form asp-action="GradeSearch" asp-controller="Student">
+    <div class="form-group">
+        
+        <input type="text" name="namePredmet"/>
+        
+        <input type="submit" value="Найти по названию предмета" class="btn btn-default" />
+    </div>
+</form>
+
+<table>
+    <thead>
+        <td>№</td>
+        <td>Название предмета</td>
+        <td>Тип контроля</td>
+        <td>Преподаватель</td>
+        <td>Дата</td>
+        <td>Оценка</td>
+    </thead>
+
+    @foreach (var item in ViewBag.Grades)
+   {
+       <tr>
+           <td>@(i = i + 1)</td>
+           <td>@item.NamePredmet</td>
+           <td>@item.TypeControl</td>
+           <td>@item.SurnameTeacher</td>
+           <td>@item.Date</td>
+           <td>@item.CurGrade</td>
+       </tr>
+   }
+
+</table>

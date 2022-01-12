@@ -1,0 +1,50 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>Добавление новой записи в учебный план</h1>
+<form asp-action="AddUPlanUnit2" asp-controller="Admin">
+    <div class="form-group">
+        <p><select name="id_type">
+        <option disabled>Выберите тип контроля</option>
+        @foreach (var item in ViewBag.Types)
+       {
+           <option value="@item.IdTypeOfControl">@item.TypeOfControlName</option>
+       }
+   </select></p>
+
+   <p><select name="id_predm">
+        <option disabled>Выберите предмет</option>
+        @foreach (var item in ViewBag.Predmets)
+       {
+           <option value="@item.IdPredmet">@item.PredmetName</option>
+       }
+   </select></p>
+
+   <p><select name="id_teacher">
+        <option disabled>Выберите преподавателя</option>
+        @foreach (var item in ViewBag.Teachers)
+       {
+           <option value="@item.IdTeacher">@item.Surname @item.Name @item.SecondName</option>
+       }
+   </select></p>
+
+   <p><select name="id_group">
+        <option disabled>Выберите группу</option>
+        @foreach (var item in ViewBag.Groups)
+       {
+           <option value="@item.IdGroup">@item.GroupName</option>
+       }
+   </select></p>
+   <p>
+   <label>Введите количество часов</label>
+   <input type="number" name="hourse"/>
+   </p>
+   <p>
+   <label>Введите семестр</label>
+   <input type="number" name="semestr"/>
+   </p>
+        <input type="submit" value="Отправить" class="btn btn-default" />
+    </div>
+</form>

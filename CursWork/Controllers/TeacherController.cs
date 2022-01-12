@@ -10,18 +10,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
+using System;
+using System.IO;
+using TemplateEngine.Docx;
+using Microsoft.Office.Interop.Word;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CursWork.Controllers
 {
     public class TeacherController : Controller
     {
+
+        private readonly IWebHostEnvironment _appEnvironment;
+
         private TeacherContext db;
         private readonly ILogger<TeacherController> _logger;
 
-        public TeacherController(TeacherContext tc, ILogger<TeacherController> logger)
+        public TeacherController(TeacherContext tc, ILogger<TeacherController> logger, IWebHostEnvironment appEnvironment)
         {
             _logger = logger;
             db = tc;
+            _appEnvironment = appEnvironment;
         }
 
         public class PPredmet
@@ -175,6 +184,7 @@ namespace CursWork.Controllers
 
         public IActionResult ShowGrade2([FromQuery(Name = "id")] int Id)
         {
+            int id_teacher = Convert.ToInt32(HttpContext.Session.GetString("id_teacher"));
             var grade = from Uspevaemost in db.Uspevaemosts
                         join Exam in db.Exams on Uspevaemost.IdExamNavigation.IdExam equals Exam.IdExam
                         join UplanUnit in db.UplanUnits on Exam.IdPlanUnitNavigation.IdUplanUnit equals UplanUnit.IdUplanUnit
@@ -204,10 +214,58 @@ namespace CursWork.Controllers
                                   join Predmet in db.Predmets on UplanUnit.IdPredmetNavigation.IdPredmet equals Predmet.IdPredmet
                                   where UplanUnit.IdUplanUnit == Id
                                   select Predmet.PredmetName).First();
+
+
+            var teacher = db.Teachers.Where(t => t.IdTeacher == id_teacher).First();
+            string nameTeacher = teacher.Surname + ' ' + teacher.Name + ' ' + teacher.SecondName;
+            string date = cg.Last().Date;
+
+            System.IO.File.Delete("OutputFile.docx");
+            System.IO.File.Copy("TemplateListGroupWithGrade.docx", "OutputFile.docx");
+
+            TableContent table = new TableContent();
+            table.Name = "tableVed";
+            int n = 0;
+            foreach (var i in cg)
+            {
+                n++;
+                table.AddRow(new FieldContent("number", n.ToString()),
+                    new FieldContent("FIO", i.Surname + ' ' + i.Name + ' ' + i.SecondName),
+                    new FieldContent("mark", i.Mark));
+            }
+
+            var valuesToFile = new Content(
+                new FieldContent("group", nameGroup),
+                new FieldContent("predmet", namePredmet),
+                new FieldContent("teacher", nameTeacher),
+                new FieldContent("date", date),
+                table
+                );
+
+            using (var ouputDocumet = new TemplateProcessor("OutputFile.docx").SetRemoveContentControls(true))
+            {
+                ouputDocumet.FillContent(valuesToFile);
+                ouputDocumet.SaveChanges();
+            }
+
+
+
             ViewBag.CG = cg;
             ViewBag.NameGroup = nameGroup;
             ViewBag.NamePredmet = namePredmet;
+            ViewBag.ID = Id;
             return View();
+        }
+
+
+        public IActionResult GetFileClient()
+        {
+            string file_path = Path.Combine(_appEnvironment.ContentRootPath, "OutputFile.docx");
+            string file_type = "application/docx";
+            string file_name = "OutputFile.docx";
+
+
+            return PhysicalFile(file_path, file_type, file_name);
         }
 
         public IActionResult SetGrade1()
@@ -310,6 +368,50 @@ namespace CursWork.Controllers
 
             db.SaveChanges();
             return RedirectToAction("Mainpage_Teacher", "Teacher");
+        }
+
+        public IActionResult ShowGroups()
+        {
+            var groups = (from Groups in db.Groups select Groups).ToList();
+            ViewBag.Groups = groups;
+            return View();
+        }
+
+        public IActionResult ShowStudent([FromQuery(Name = "id")] int id_group)
+        {
+            
+            string nameGroup = db.Groups.Where(p => p.IdGroup == id_group).Select(p => p.GroupName).FirstOrDefault();
+            var students = db.Students.Where(p => p.IdGroup == id_group).ToList();
+
+            //Подготовка файла
+            System.IO.File.Delete("OutputFile.docx");
+            System.IO.File.Copy("TemplateListStudents.docx", "OutputFile.docx");
+            TableContent table = new TableContent();
+            table.Name = "table";
+            int n = 0;
+            foreach (var i in students)
+            {
+                n++;
+                table.AddRow(new FieldContent("number", n.ToString()),
+                    new FieldContent("FIO", i.Surname + ' ' + i.Name + ' ' + i.SecondName));
+            }
+
+            var valuesToFile = new Content(
+                new FieldContent("nameGroup", nameGroup),
+                new FieldContent("count", students.Count().ToString()),
+                table
+                );
+
+            using (var ouputDocumet = new TemplateProcessor("OutputFile.docx").SetRemoveContentControls(true))
+            {
+                ouputDocumet.FillContent(valuesToFile);
+                ouputDocumet.SaveChanges();
+            }
+
+
+            ViewBag.Students = students;
+            ViewBag.NameGroup = nameGroup;
+            return View();
         }
     }
 }

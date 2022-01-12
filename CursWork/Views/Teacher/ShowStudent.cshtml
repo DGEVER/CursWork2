@@ -3,8 +3,9 @@
 *@
 @{
     int i = 0;
+
 }
-<h1>Оценки группы @ViewBag.NameGroup по дисциплине @ViewBag.NamePredmet</h1>
+<h1>Список студентов группы @ViewBag.NameGroup</h1>
 <form asp-action="GetFileClient" asp-controller="Teacher">
     <div class="form-group">
         <input type="hidden" value="@ViewBag.ID" name="id" />
@@ -17,20 +18,15 @@
         <td>Фамилия</td>
         <td>Имя</td>
         <td>Отчество</td>
-        <td>Оценка</td>
-        <td>Дата</td>
     </thead>
 
-    @foreach (var it in @ViewBag.CG)
+    @foreach (var item in ViewBag.Students)
    {
        <tr>
            <td>@(i = i + 1)</td>
-           <td>@it.Surname</td>
-           <td>@it.Name</td>
-           <td>@it.SecondName</td>
-           <td>@it.Mark</td>
-           <td>@it.Date</td>
+           <td>@item.Surname</td>
+           <td>@item.Name</td>
+           <td>@item.SecondName</td>
        </tr>
    }
-
 </table>

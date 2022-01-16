@@ -130,6 +130,7 @@ namespace CursWork.Controllers
             ViewBag.Name = curTeacher.Name;
             ViewBag.Surname = curTeacher.Surname;
             ViewBag.SecondName = curTeacher.SecondName;
+            _logger.LogInformation("Открытие страницы: Mainpage_Teacher");
             return View();
         }
 
@@ -156,6 +157,7 @@ namespace CursWork.Controllers
                 pred.Add(new PPredmet(i.NamePred, i.TypeControl, i.Count, i.Sem));
             }
             ViewBag.Predmets = pred;
+            _logger.LogInformation("Открытие страницы: ShowPredmTeach");
             return View();
         }
 
@@ -179,6 +181,7 @@ namespace CursWork.Controllers
                 pgp.Add(new PGroupPredmet(g.ID, g.NameGroup, g.NamePredmet));
             }
             ViewBag.GP = pgp;
+            _logger.LogInformation("Открытие страницы: ShowGrade1");
             return View();
         }
 
@@ -198,7 +201,7 @@ namespace CursWork.Controllers
                             Mark = Uspevaemost.Mark,
                             Date = Exam.Date
                         };
-
+            
             List<CurGrade> cg = new List<CurGrade>();
 
             foreach(var g in grade)
@@ -254,6 +257,7 @@ namespace CursWork.Controllers
             ViewBag.NameGroup = nameGroup;
             ViewBag.NamePredmet = namePredmet;
             ViewBag.ID = Id;
+            _logger.LogInformation("Открытие страницы: ShowGrade2");
             return View();
         }
 
@@ -264,7 +268,7 @@ namespace CursWork.Controllers
             string file_type = "application/docx";
             string file_name = "OutputFile.docx";
 
-
+            _logger.LogInformation("Вызов функции скачивания файла");
             return PhysicalFile(file_path, file_type, file_name);
         }
 
@@ -291,11 +295,13 @@ namespace CursWork.Controllers
             }
 
             ViewBag.Exams = pe;
+            _logger.LogInformation("Открытие страницы: SetGrade1");
             return View();
         }
 
         public IActionResult SetGrade2([FromQuery(Name = "id")] int Id)
         {
+            
             var uspev = from Uspevaemost in db.Uspevaemosts where Uspevaemost.IdExam == Id select Uspevaemost;
 
             int id_group = (from Exam in db.Exams
@@ -327,6 +333,7 @@ namespace CursWork.Controllers
             ViewBag.Course = cg;
             ViewBag.Type = id_typeControl;
             ViewBag.id_exam = Id;
+            _logger.LogInformation("Открытие страницы: SetGrade2");
             return View();
         }
 
@@ -335,19 +342,31 @@ namespace CursWork.Controllers
             ViewBag.ID_EXAM = id_exam;
             ViewBag.ID_STUDENT = id_student;
             ViewBag.ID_TYPE = id_type;
+            _logger.LogInformation("Открытие страницы: SetGrade3");
             return View();
         }
 
         public IActionResult SetGrade4(string mark, int id_student, int id_exam)
         {
+            _logger.LogInformation("Открытие страницы: SetGrade4");
             Uspevaemost uspevaemost = new Uspevaemost();
             uspevaemost.Mark = mark;
             uspevaemost.IdStudent = id_student;
             uspevaemost.IdExam = id_exam;
+            var transaction = db.Database.BeginTransaction();
+            try
+            {
+                db.Uspevaemosts.Add(uspevaemost);
 
-            db.Uspevaemosts.Add(uspevaemost);
-
-            db.SaveChanges();
+                db.SaveChanges();
+                transaction.Commit();
+                _logger.LogInformation("Транзакция завершена успешно");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError("Ошибка при добавлении данных");
+            }
             return RedirectToAction("Mainpage_Teacher", "Teacher");
         }
 
@@ -356,17 +375,29 @@ namespace CursWork.Controllers
             ViewBag.ID_EXAM = id_exam;
             ViewBag.ID_STUDENT = id_student;
             ViewBag.ID_TYPE = id_type;
+            _logger.LogInformation("Открытие страницы: ChangeGrade1");
             return View();
         }
 
         public IActionResult ChangeGrade2(string mark, int id_student, int id_exam)
         {
+            _logger.LogInformation("Открытие страницы: ChangeGrade1");
             var uspevaemost = db.Uspevaemosts.Where(p => p.IdStudent == id_student && p.IdExam == id_exam).FirstOrDefault();
             uspevaemost.Mark = mark;
+            var transaction = db.Database.BeginTransaction();
+            try
+            {
+                db.Uspevaemosts.Update(uspevaemost);
 
-            db.Uspevaemosts.Update(uspevaemost);
-
-            db.SaveChanges();
+                db.SaveChanges();
+                transaction.Commit();
+                _logger.LogInformation("Транзакция завершена успешно");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError("Ошибка при обновлении данных");
+            }
             return RedirectToAction("Mainpage_Teacher", "Teacher");
         }
 
@@ -374,6 +405,7 @@ namespace CursWork.Controllers
         {
             var groups = (from Groups in db.Groups select Groups).ToList();
             ViewBag.Groups = groups;
+            _logger.LogInformation("Открытие страницы: ShowGroups");
             return View();
         }
 
@@ -381,7 +413,7 @@ namespace CursWork.Controllers
         {
             
             string nameGroup = db.Groups.Where(p => p.IdGroup == id_group).Select(p => p.GroupName).FirstOrDefault();
-            var students = db.Students.Where(p => p.IdGroup == id_group).ToList();
+            var students = db.Students.Where(p => p.IdGroup == id_group).OrderBy(p => p.Surname).ToList();
 
             //Подготовка файла
             System.IO.File.Delete("OutputFile.docx");
@@ -411,6 +443,7 @@ namespace CursWork.Controllers
 
             ViewBag.Students = students;
             ViewBag.NameGroup = nameGroup;
+            _logger.LogInformation("Открытие страницы: ShowStudent");
             return View();
         }
     }

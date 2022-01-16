@@ -6,6 +6,12 @@
 
 }
 <h1>Список студентов группы @ViewBag.NameGroup</h1>
+<form asp-action="GetFileClient" asp-controller="Admin">
+    <div class="form-group">
+        <input type="hidden" value="@ViewBag.ID" name="id" />
+        <input type="submit" value="Распечатать" class="btn btn-default" />
+    </div>
+</form>
 <table>
     <thead>
         <td>№</td>

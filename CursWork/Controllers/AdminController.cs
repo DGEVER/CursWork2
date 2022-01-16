@@ -12,6 +12,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System;
 using System.IO;
+using TemplateEngine.Docx;
+using Microsoft.Office.Interop.Word;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CursWork.Controllers
 {
@@ -20,10 +23,13 @@ namespace CursWork.Controllers
         private AdminContext db;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(AdminContext ac, ILogger<AdminController> logger)
+        private readonly IWebHostEnvironment _appEnvironment;
+
+        public AdminController(AdminContext ac, ILogger<AdminController> logger, IWebHostEnvironment appEnvironment)
         {
             _logger = logger;
             db = ac;
+            _appEnvironment = appEnvironment;
         }
 
         public class PUPlan
@@ -46,16 +52,19 @@ namespace CursWork.Controllers
 
         public IActionResult Mainpage_Admin()
         {
+            _logger.LogInformation("Открытие страницы: Mainpage_Admin");
             return View();
         }
 
         public IActionResult Show()
         {
+            _logger.LogInformation("Открытие страницы: Show");
             return View();
         }
 
         public IActionResult Add()
         {
+            _logger.LogInformation("Открытие страницы: Add");
             return View();
         }
 
@@ -63,33 +72,79 @@ namespace CursWork.Controllers
         {
             var groups = (from Groups in db.Groups select Groups).ToList();
             ViewBag.Groups = groups;
+
+            _logger.LogInformation("Открытие страницы: ShowGroups");
+
             return View();
         }
 
         public IActionResult ShowStudent([FromQuery(Name = "id")] int id_group)
         {
             string nameGroup = db.Groups.Where(p => p.IdGroup == id_group).Select(p => p.GroupName).FirstOrDefault();
-            var students = db.Students.Where(p => p.IdGroup == id_group).ToList();
+            var students = db.Students.Where(p => p.IdGroup == id_group).OrderBy(p => p.Surname).ToList();
+
+            //Подготовка файла
+            System.IO.File.Delete("OutputFile.docx");
+            System.IO.File.Copy("TemplateListStudents.docx", "OutputFile.docx");
+            TableContent table = new TableContent();
+            table.Name = "table";
+            int n = 0;
+            foreach (var i in students)
+            {
+                n++;
+                table.AddRow(new FieldContent("number", n.ToString()),
+                    new FieldContent("FIO", i.Surname + ' ' + i.Name + ' ' + i.SecondName));
+            }
+
+            var valuesToFile = new Content(
+                new FieldContent("nameGroup", nameGroup),
+                new FieldContent("count", students.Count().ToString()),
+                table
+                );
+
+            using (var ouputDocumet = new TemplateProcessor("OutputFile.docx").SetRemoveContentControls(true))
+            {
+                ouputDocumet.FillContent(valuesToFile);
+                ouputDocumet.SaveChanges();
+            }
+
+            _logger.LogInformation("Открытие страницы: ShowStudent");
+
             ViewBag.Students = students;
             ViewBag.NameGroup = nameGroup;
             return View();
+        }
+
+        public IActionResult GetFileClient()
+        {
+            string file_path = Path.Combine(_appEnvironment.ContentRootPath, "OutputFile.docx");
+            string file_type = "application/docx";
+            string file_name = "OutputFile.docx";
+
+            _logger.LogInformation("Вызов функции скачивания файла");
+
+            return PhysicalFile(file_path, file_type, file_name);
         }
 
         public IActionResult ShowTeachers()
         {
             var teachers = (from Teacher in db.Teachers select Teacher).ToList();
             ViewBag.Teachers = teachers;
+
+            _logger.LogInformation("Открытие страницы: ShowTeachers");
+
             return View();
         }
 
         public IActionResult AddGroup1()
         {
-            //var form = (from FormOfEducat in db.FormOfEducats select FormOfEducat).ToList();
             var form = db.FormOfEducats.ToList();
-            //var spec = (from Speciality in db.Specialities select Speciality).ToList();
             var spec = db.Specialities.ToList();
             ViewBag.Specialities = spec;
             ViewBag.Form = form;
+
+            _logger.LogInformation("Открытие страницы: AddGroup1");
+
             return View();
         }
 
@@ -100,9 +155,26 @@ namespace CursWork.Controllers
             group.IdFormOfEducation = id_form;
             group.IdSpeciality = id_spec;
 
-            db.Groups.Add(group);
-            
-            db.SaveChanges();
+            var transaction = db.Database.BeginTransaction();
+            try
+            {
+
+
+                db.Groups.Add(group);
+
+                db.SaveChanges();
+                transaction.Commit();
+                _logger.LogInformation("Транзакция завершена успешно");
+
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError("Ошибка при добавлении данных");
+            }
+
+            _logger.LogInformation("Открытие страницы: AddGroup2");
+
             return RedirectToAction("Mainpage_Admin", "Admin");
         }
 
@@ -110,6 +182,9 @@ namespace CursWork.Controllers
         {
             var groups = db.Groups.ToList();
             ViewBag.Groups = groups;
+
+            _logger.LogInformation("Открытие страницы: AddStudent1");
+
             return View();
         }
 
@@ -120,30 +195,43 @@ namespace CursWork.Controllers
             var result = new SHA256Managed().ComputeHash(data);
             string hash = BitConverter.ToString(result).Replace("-", "").ToUpper();
 
+            _logger.LogInformation("Открытие страницы: AddStudent2");
+
             User user = new User();
             user.Login = login;
             user.HashPassword = hash;
             user.Type = "student";
 
-            db.Users.Add(user);
-            db.SaveChanges();
-            Student student = new Student();
-            student.IdUser = db.Users.OrderByDescending(p => p.IdUser).First().IdUser;
-            student.IdGroup = id_group;
-            student.Name = name;
-            student.Surname = surname;
-            student.SecondName = secondName;
-            student.YearOfAppl = year;
-            student.ContactNumber = number;
-            student.ContactEmail = email;
-            student.City = city;
-            student.Street = street;
-            student.House = house;
-            student.Flat = flat;
-            
-            db.Students.Add(student);
+            var transaction = db.Database.BeginTransaction();
+            try
+            {
+                db.Users.Add(user);
+                db.SaveChanges();
+                Student student = new Student();
+                student.IdUser = db.Users.OrderByDescending(p => p.IdUser).First().IdUser;
+                student.IdGroup = id_group;
+                student.Name = name;
+                student.Surname = surname;
+                student.SecondName = secondName;
+                student.YearOfAppl = year;
+                student.ContactNumber = number;
+                student.ContactEmail = email;
+                student.City = city;
+                student.Street = street;
+                student.House = house;
+                student.Flat = flat;
 
-            db.SaveChanges();
+                db.Students.Add(student);
+
+                db.SaveChanges();
+                transaction.Commit();
+                _logger.LogInformation("Транзакция завершена успешно");
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError("Ошибка при добавлении данных");
+            }
             return RedirectToAction("Mainpage_Admin", "Admin");
         }
 
@@ -151,6 +239,7 @@ namespace CursWork.Controllers
         {
             var predmets = db.Predmets.ToList();
             ViewBag.Predmets = predmets;
+            _logger.LogInformation("Открытие страницы: AddTeacher1");
             return View();
         }
 
@@ -165,26 +254,40 @@ namespace CursWork.Controllers
             user.HashPassword = hash;
             user.Type = "teacher";
 
-            db.Users.Add(user);
+            _logger.LogInformation("Открытие страницы: AddTeacher1");
 
-            db.SaveChanges();
+            var transaction = db.Database.BeginTransaction();
+            try
+            {
 
-            Teacher teacher = new Teacher();
-            teacher.Name = name;
-            teacher.Surname = surname;
-            teacher.SecondName = secondName;
-            teacher.ContactNumb = number;
-            teacher.IdUser = db.Users.OrderByDescending(x => x.IdUser).First().IdUser;
+                db.Users.Add(user);
 
-            db.Teachers.Add(teacher);
+                db.SaveChanges();
 
-            db.SaveChanges();
+                Teacher teacher = new Teacher();
+                teacher.Name = name;
+                teacher.Surname = surname;
+                teacher.SecondName = secondName;
+                teacher.ContactNumb = number;
+                teacher.IdUser = db.Users.OrderByDescending(x => x.IdUser).First().IdUser;
 
+                db.Teachers.Add(teacher);
+
+                db.SaveChanges();
+                transaction.Commit();
+                _logger.LogInformation("Транзакция завершена успешно");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError("Ошибка при добавлении данных");
+            }
             return RedirectToAction("Mainpage_Admin", "Admin");
         }
 
         public IActionResult AddPredmet1()
         {
+            _logger.LogInformation("Открытие страницы: AddPredmet1");
             return View();
         }
 
@@ -192,8 +295,23 @@ namespace CursWork.Controllers
         {
             Predmet predmet = new Predmet();
             predmet.PredmetName = namePredmet;
-            db.Predmets.Add(predmet);
-            db.SaveChanges();
+
+            _logger.LogInformation("Открытие страницы: AddPredmet1");
+
+
+            var transaction = db.Database.BeginTransaction();
+            try
+            {
+                db.Predmets.Add(predmet);
+                db.SaveChanges();
+                transaction.Commit();
+                _logger.LogInformation("Транзакция завершена успешно");
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError("Ошибка при добавлении данных");
+            }
             return RedirectToAction("Mainpage_Admin", "Admin");
         }
 
@@ -208,6 +326,7 @@ namespace CursWork.Controllers
             ViewBag.Types = types;
             ViewBag.Teachers = teachers;
             ViewBag.Groups = groups;
+            _logger.LogInformation("Открытие страницы: AddUPlanUnit1");
             return View();
         }
 
@@ -221,8 +340,20 @@ namespace CursWork.Controllers
             uplanUnit.CounterOfHours = hourse;
             uplanUnit.Semestr = semestr;
 
-            db.UplanUnits.Add(uplanUnit);
-            db.SaveChanges();
+            _logger.LogInformation("Открытие страницы: AddUPlanUnit2");
+            var transaction = db.Database.BeginTransaction();
+            try
+            {
+                db.UplanUnits.Add(uplanUnit);
+                db.SaveChanges();
+                transaction.Commit();
+                _logger.LogInformation("Транзакция завершена успешно");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError("Ошибка при добавлении данных");
+            }
             return RedirectToAction("Mainpage_Admin", "Admin");
         }
 
@@ -249,6 +380,7 @@ namespace CursWork.Controllers
                 plan.Add(new PUPlan(planItem.ID, planItem.NameGroup, planItem.NameType, planItem.NamePredmet, planItem.NameTeacher));
             }
             ViewBag.UPlanUnit = plan;
+            _logger.LogInformation("Открытие страницы: AddExam1");
             return View();
         }
 
@@ -257,10 +389,82 @@ namespace CursWork.Controllers
             Exam exam = new Exam();
             exam.IdPlanUnit = id;
             exam.Date = dateEx;
+            
+            _logger.LogInformation("Открытие страницы: AddExam2");
 
-            db.Exams.Add(exam);
-            db.SaveChanges();
+            var transaction = db.Database.BeginTransaction();
+            try
+            {
+                db.Exams.Add(exam);
+                db.SaveChanges();
+                transaction.Commit();
+                _logger.LogInformation("Транзакция завершена успешно");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError("Ошибка при добавлении данных");
+            }
             return RedirectToAction("Mainpage_Admin", "Admin");
+        }
+
+        public IActionResult ShowMarkLog()
+        {
+            var markLog = from MarkLog in db.MarkLogs
+                          join Teacher in db.Teachers on MarkLog.IdTeacherNavigation.IdTeacher equals Teacher.IdTeacher
+                          join Uspevaemost in db.Uspevaemosts on MarkLog.IdUspevaemostNavigation.IdUspevaemost equals Uspevaemost.IdUspevaemost
+                          join Student in db.Students on Uspevaemost.IdStudentNavigation.IdStudent equals Student.IdStudent
+                          join Exam in db.Exams on Uspevaemost.IdExamNavigation.IdExam equals Exam.IdExam
+                          join UplanUnit in db.UplanUnits on Exam.IdPlanUnitNavigation.IdUplanUnit equals UplanUnit.IdUplanUnit
+                          join TypeOfControl in db.TypeOfControls on UplanUnit.IdTypeOfControlNavigation.IdTypeOfControl equals TypeOfControl.IdTypeOfControl
+                          join Predmet in db.Predmets on UplanUnit.IdPredmetNavigation.IdPredmet equals Predmet.IdPredmet
+                          join Group in db.Groups on UplanUnit.IdGroupNavigation.IdGroup equals Group.IdGroup
+                          orderby MarkLog.IdMarkLog descending
+                          select new
+                          {
+                              Date = MarkLog.DateTime,
+                              NameGroup = Group.GroupName,
+                              NameStudent = Student.Surname + ' ' + Student.Name + ' ' + Student.SecondName,
+                              NameTeacher = Teacher.Surname + ' ' + Teacher.Name + ' ' + Teacher.SecondName,
+                              NamePredmet = Predmet.PredmetName,
+                              NameType = TypeOfControl.TypeOfControlName,
+                              OldMark = MarkLog.OldMark,
+                              NewMark = MarkLog.NewMark
+                          };
+
+            List<PMarkLog> list = new List<PMarkLog>();
+            foreach(var i in markLog)
+            {
+                list.Add(new PMarkLog(i.Date, i.NameGroup, i.NameStudent, i.NameTeacher, i.NamePredmet, i.NameType, i.OldMark, i.NewMark));
+            }
+            ViewBag.List = list;
+            _logger.LogInformation("Открытие страницы: ShowMarkLog");
+            return View();
+        }
+
+        public class PMarkLog
+        {
+            public DateTime Date  { get; set; }
+            public string NameGroup { get; set; }
+            public string NameStudent { get; set; }
+            public string NameTeacher { get; set; }
+            public string NamePredmet { get; set; }
+            public string NameType { get; set; }
+            public string? OldMark { get; set; }
+            public string? NewMark { get; set; }
+            public PMarkLog(DateTime date, string nameGroup, string nameStudent, string nameTeacher, string namePredmet, string nameType,
+                string? oldMark, string? newMark)
+                {
+                Date = date;
+                NameGroup = nameGroup;
+                NameStudent = nameStudent;
+                NameTeacher = nameTeacher;
+                NamePredmet = namePredmet;
+                NameType = nameType;
+                OldMark = oldMark;
+                NewMark = newMark;
+                }
+        
         }
     }
 }

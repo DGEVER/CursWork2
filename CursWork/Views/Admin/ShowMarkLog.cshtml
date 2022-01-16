@@ -1,0 +1,47 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<h1>История выставления оценок</h1>
+<table>
+    <thead>
+        <td>Дата</td>
+        <td>Группа</td>
+        <td>Студент</td>
+        <td>Преподаватель</td>
+        <td>Предмет</td>
+        <td>Тип контроля</td>
+        <td>Старая оценка</td>
+        <td>Новая оценка</td>
+    </thead>
+
+    @foreach (var i in @ViewBag.List)
+   {
+       <tr>
+            <td>@i.Date</td>
+            <td>@i.NameGroup</td>
+            <td>@i.NameStudent</td>
+            <td>@i.NameTeacher</td>
+            <td>@i.NamePredmet</td>
+            <td>@i.NameType</td>
+            @if(@i.OldMark == null)
+            {
+                <td>-</td>
+            }
+            else
+            {
+                <td>@i.OldMark</td>
+            }
+            
+            @if(@i.NewMark == null)
+            {
+                <td>-</td>
+            }
+            else
+            {
+                <td>@i.NewMark</td>
+            }
+       </tr>
+   }
+</table>

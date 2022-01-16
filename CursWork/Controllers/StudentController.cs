@@ -82,6 +82,7 @@ namespace CursWork.Controllers
             ViewBag.Group = curStudent.First().Group;
             ViewBag.Spec = curStudent.First().Spec;
             ViewBag.Form = curStudent.First().Form;
+            _logger.LogInformation("Открытие страницы: Mainpage_Student");
             return View();
         }
         public IActionResult Grade()
@@ -109,6 +110,7 @@ namespace CursWork.Controllers
             }
 
             ViewBag.Grades = pg;
+            _logger.LogInformation("Открытие страницы: Grade");
             return View();
         }
 
@@ -138,6 +140,7 @@ namespace CursWork.Controllers
             }
 
             ViewBag.Grades = pg;
+            _logger.LogInformation("Вызов функции поиска");
             return View("Grade");
         }
 
@@ -158,6 +161,7 @@ namespace CursWork.Controllers
                         join TypeOfControl in db.TypeOfControls on UplanUnit.IdTypeOfControlNavigation.IdTypeOfControl equals TypeOfControl.IdTypeOfControl
                         join Predmet in db.Predmets on UplanUnit.IdPredmetNavigation.IdPredmet equals Predmet.IdPredmet
                         where UplanUnit.IdGroup == id_group
+                        orderby UplanUnit.Semestr
                         select new
                         {
                             IdGroup = UplanUnit.IdGroup,
@@ -174,6 +178,7 @@ namespace CursWork.Controllers
                 pred.Add(new PPredmet(i.NamePred, i.TypeControl, i.Count, i.Sem));
             }
             ViewBag.Predmets = pred;
+            _logger.LogInformation("Открытие страницы: ShowPredmets");
             return View();
         }
     }

@@ -3,52 +3,72 @@
 *@
 @{
 }
+<link rel="stylesheet" href="~/css/form.css" />
+<link rel="stylesheet" href="~/css/addAdmin.css" />
+
 <h1>В какую группу хотите добавить студента?</h1>
 <form asp-action="AddStudent2" asp-controller="Admin">
-    <div class="form-group">
-        <p><select name="id_group">
+    <ul class="wrapper">
+    <li class="form-row">
+        <label>Выберите группу</label>
+    <select name="id_group">
         <option disabled>Выберите форму обучения</option>
         @foreach (var item in ViewBag.Groups)
        {
            <option value="@item.IdGroup">@item.GroupName</option>
        }
-   </select></p>
-
+   </select>
+   </li>
+   <li class="form-row">
    <label>Фамилия</label>
    <input type="text" name="surname"/>
-
+   </li>
+   <li class="form-row">
    <label>Имя</label>
    <input type="text" name="name"/>
-
+   </li>
+   <li class="form-row">
    <label>Отчество</label>
    <input type="text" name="secondName"/>
-
+   </li>
+   <li class="form-row">
    <label>Год поступления</label>
    <input type="text" name="year"/>
-
+   </li>
+   <li class="form-row">
    <label>Контактный номер</label>
    <input type="text" name="number"/>
-
+   </li>
+   <li class="form-row">
    <label>Контактный адрес электронной почты</label>
    <input type="text" name="email"/>
-
+   </li>
+   <li class="form-row">
    <label>Город</label>
    <input type="text" name="city"/>
-
+   </li>
+   <li class="form-row">
    <label>Улица</label>
    <input type="text" name="street"/>
-
+   </li>
+   <li class="form-row">
    <label>Дом</label>
    <input type="text" name="house"/>
-   
+   </li>
+   <li class="form-row">
    <label>Квартира</label>
    <input type="text" name="flat"/>
-   
+   </li>
+   <li class="form-row">
    <label>Логин в личный кабинет</label>
    <input type="text" name="login"/>
-
+   </li>
+   <li class="form-row">
    <label>Пароль</label>
    <input type="text" name="password"/>
-
-        <input type="submit" value="Отправить" class="btn btn-default" />
+   </li>
+   <li class="form-row">
+   <input type="submit" value="Отправить" class="btn btn-default" />
+   </li>
+        </ul>
 </form> 

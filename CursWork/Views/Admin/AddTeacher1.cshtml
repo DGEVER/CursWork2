@@ -3,35 +3,48 @@
 *@
 @{
 }
+<link rel="stylesheet" href="~/css/form.css" />
+<link rel="stylesheet" href="~/css/addAdmin.css" />
+
 <h1>Добавление нового преподавателя</h1>
 <form asp-action="AddTeacher2" asp-controller="Admin">
-    <div class="form-group">
-        <p><select name="id_predm">
+    <ul class="wrapper">
+    <li style="display:none">
+    <label>Выберите предмет</label>
+    <select name="id_predm">
         <option disabled>Выберите группу</option>
         @foreach (var item in ViewBag.Predmets)
        {
            <option value="@item.IdPredmet">@item.PredmetName</option>
        }
-   </select></p>
-   
+   </select>
+   </li>
+   <li class="form-row">
    <label>Фамилия</label>
    <input type="text" name="surname"/>
-
+   </li>
+   <li class="form-row">
    <label>Имя</label>
    <input type="text" name="name"/>
-
+   </li>
+   <li class="form-row">
    <label>Отчество</label>
    <input type="text" name="secondName"/>
-
+   </li>
+   <li class="form-row">
    <label>Контактный номер</label>
    <input type="text" name="number"/>
-   
+   </li>
+   <li class="form-row">
    <label>Логин в личный кабинет</label>
    <input type="text" name="login"/>
-
+   </li>
+   <li class="form-row">
    <label>Пароль</label>
    <input type="text" name="password"/>
-
-        <input type="submit" value="Отправить" class="btn btn-default" />
-    </div>
+   </li>
+   <li class="form-row">
+   <input type="submit" value="Отправить" class="btn btn-default" />
+    </li>   
+</ul>
 </form>

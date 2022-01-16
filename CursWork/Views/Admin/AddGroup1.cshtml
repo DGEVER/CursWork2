@@ -3,24 +3,39 @@
 *@
 @{
 }
+<link rel="stylesheet" href="~/css/form.css" />
+<link rel="stylesheet" href="~/css/addAdmin.css" />
+
 <h1>Добавление новой группы</h1>
 <form asp-action="AddGroup2" asp-controller="Admin">
-    <div class="form-group">
-        <p><select name="id_form">
-        <option disabled>Выберите форму обучения</option>
-        @foreach (var item in ViewBag.Form)
-       {
-           <option value="@item.IdForm">@item.FormName</option>
-       }
-   </select></p>
-   <p><select name="id_spec">
+    <ul class="wrapper">
+        <li class="form-row">
+            <label>Выберите форму обучения</label>
+            <select name="id_form">
+                <option disabled>Выберите форму обучения</option>
+                @foreach (var item in ViewBag.Form)
+               {
+                   <option value="@item.IdForm">@item.FormName</option>
+               }
+            </select>
+        </li>
+   <li class="form-row">
+       <label>Выберите специальность</label>
+       <select name="id_spec">
         <option disabled>Выберите специальность</option>
         @foreach (var item in ViewBag.Specialities)
        {
            <option value="@item.IdSpeciality">@item.SpecialityName</option>
        }
-   </select></p>
-   <input type="text" name="nameGroup"/>
-        <input type="submit" value="Отправить" class="btn btn-default" />
-    </div>
+        </select>
+   </li>
+   <li class="form-row">
+       <label>Введите название группы</label>
+   <input type="text" name="nameGroup"/> 
+   </li>
+   <li>
+       <input type="submit" value="Отправить" class="btn btn-default" />
+   </li>
+
+    </ul>
 </form>

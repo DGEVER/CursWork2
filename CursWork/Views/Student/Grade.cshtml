@@ -15,16 +15,18 @@
     </div>
 </form>
 
-<table>
+<table class="table">
     <thead>
-        <td>№</td>
-        <td>Название предмета</td>
-        <td>Тип контроля</td>
-        <td>Преподаватель</td>
-        <td>Дата</td>
-        <td>Оценка</td>
+        <tr>
+            <th>№</th>
+            <th>Название предмета</th>
+            <th>Тип контроля</th>
+            <th>Преподаватель</th>
+            <th>Дата</th>
+            <th>Оценка</th>
+        </tr>
     </thead>
-
+    <tbody>
     @foreach (var item in ViewBag.Grades)
    {
        <tr>
@@ -36,5 +38,6 @@
            <td>@item.CurGrade</td>
        </tr>
    }
+   </tbody>
 
 </table>

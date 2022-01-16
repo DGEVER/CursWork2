@@ -6,15 +6,17 @@
 }
 <h1>Оценки</h1>
 
-<table>
+<table class="table">
     <thead>
-        <td>№</td>
-        <td>Группа</td>
-        <td>Предмет</td>
-        <td>Тип</td>
-        <td>Выбор</td>
+        <tr>
+        <th>№</th>
+        <th>Группа</th>
+        <th>Предмет</th>
+        <th>Тип</th>
+        <th>Выбор</th>
+        </tr>
     </thead>
-
+    <tbody>
     @foreach (var it in @ViewBag.Exams)
    {
        <tr>
@@ -25,4 +27,5 @@
            <td><a href="~/Teacher/SetGrade2?id=@it.ID">=></a></td>
        </tr>
    }
+   </tbody>
 </table>

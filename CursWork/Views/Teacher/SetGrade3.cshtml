@@ -3,43 +3,47 @@
 *@
 @{
 }
+<link rel="stylesheet" href="~/css/form.css" />
+<link rel="stylesheet" href="~/css/addAdmin.css" />
 <h1>Выберите оценку:</h1>
 
 @if(@ViewBag.ID_TYPE == 4)
 {
     <form asp-action="SetGrade4" asp-controller="Teacher">
-        <div>
-   <p>
+        <ul class="wrapper">
+   <li class="form-row">
+       <label>Выберите тип контроля</label>
        <select name="mark">
         <option value="зачёт">Зачёт</option>
         <option value="незачёт">Незачёт</option>
     </select>
-    </p>
+    </li>
     <input type="hidden" value="@ViewBag.ID_STUDENT" name="id_student" />
     <input type="hidden" value="@ViewBag.ID_EXAM" name="id_exam" />
-    <p>
+    <li>
         <input type="submit" value="Отправить" class="btn btn-default" />
-    </p>
-    </div>
+    </li>
+    </ul>
 </form>
 }
 else 
 {
     <form asp-action="SetGrade4" asp-controller="Teacher">
-        <div>
-   <p>
+        <ul class="wrapper">
+   <li class="form-row">
+       <label>Выберите тип контроля</label>
        <select name="mark">
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
         <option value="5">5</option>
     </select>
-    </p>
+    </li>
     <input type="hidden" value="@ViewBag.ID_STUDENT" name="id_student" />
     <input type="hidden" value="@ViewBag.ID_EXAM" name="id_exam" />
-    <p>
+    <li>
         <input type="submit" value="Отправить" class="btn btn-default" />
-    </p>
-    </div>
+    </li>
+    </ul>
 </form>
 }

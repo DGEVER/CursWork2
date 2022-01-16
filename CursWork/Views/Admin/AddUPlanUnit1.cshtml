@@ -3,48 +3,65 @@
 *@
 @{
 }
+<link rel="stylesheet" href="~/css/form.css" />
+<link rel="stylesheet" href="~/css/addAdmin.css" />
+
 <h1>Добавление новой записи в учебный план</h1>
 <form asp-action="AddUPlanUnit2" asp-controller="Admin">
-    <div class="form-group">
-        <p><select name="id_type">
+    <ul class="wrapper">
+    <li class="form-row">
+    <label>Выберите тип контроля</label>
+    <select name="id_type">
         <option disabled>Выберите тип контроля</option>
         @foreach (var item in ViewBag.Types)
        {
            <option value="@item.IdTypeOfControl">@item.TypeOfControlName</option>
        }
-   </select></p>
+   </select>
+   </li>
 
-   <p><select name="id_predm">
+   <li class="form-row">
+   <label>Выберите предмет</label>
+   <select name="id_predm">
         <option disabled>Выберите предмет</option>
         @foreach (var item in ViewBag.Predmets)
        {
            <option value="@item.IdPredmet">@item.PredmetName</option>
        }
-   </select></p>
+   </select>
+   </li>
 
-   <p><select name="id_teacher">
+   <li class="form-row">
+   <label>Выберите преподавателя</label>
+   <select name="id_teacher">
         <option disabled>Выберите преподавателя</option>
         @foreach (var item in ViewBag.Teachers)
        {
            <option value="@item.IdTeacher">@item.Surname @item.Name @item.SecondName</option>
        }
-   </select></p>
+   </select>
+   </li>
 
-   <p><select name="id_group">
+   <li class="form-row">
+   <label>Выберите группу</label>
+   <select name="id_group">
         <option disabled>Выберите группу</option>
         @foreach (var item in ViewBag.Groups)
        {
            <option value="@item.IdGroup">@item.GroupName</option>
        }
-   </select></p>
-   <p>
+   </select>
+   </li>
+   <li class="form-row">
    <label>Введите количество часов</label>
    <input type="number" name="hourse"/>
-   </p>
-   <p>
+   </li>
+   <li class="form-row">
    <label>Введите семестр</label>
    <input type="number" name="semestr"/>
-   </p>
-        <input type="submit" value="Отправить" class="btn btn-default" />
-    </div>
+   </li>
+   <li >
+   <input type="submit" value="Отправить" class="btn btn-default" />
+   </li>
+    </ul>
 </form>

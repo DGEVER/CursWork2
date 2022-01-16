@@ -4,6 +4,10 @@
 @{
     int i = 0;
 }
+
+<link rel="stylesheet" href="~/css/form.css" />
+<link rel="stylesheet" href="~/css/addAdmin.css" />
+
 <h1>Оценки группы @ViewBag.NameGroup по дисциплине @ViewBag.NamePredmet</h1>
 <form asp-action="GetFileClient" asp-controller="Teacher">
     <div class="form-group">
@@ -11,16 +15,18 @@
         <input type="submit" value="Распечатать" class="btn btn-default" />
     </div>
 </form>
-<table>
+<table class="table">
     <thead>
-        <td>№</td>
-        <td>Фамилия</td>
-        <td>Имя</td>
-        <td>Отчество</td>
-        <td>Оценка</td>
-        <td>Дата</td>
+        <tr>
+        <th>№</th>
+        <th>Фамилия</th>
+        <th>Имя</th>
+        <th>Отчество</th>
+        <th>Оценка</th>
+        <th>Дата</th>
+        </tr>
     </thead>
-
+    <tbody>
     @foreach (var it in @ViewBag.CG)
    {
        <tr>
@@ -32,5 +38,5 @@
            <td>@it.Date</td>
        </tr>
    }
-
+   </tbody>
 </table>

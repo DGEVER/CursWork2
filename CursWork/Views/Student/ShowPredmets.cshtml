@@ -7,15 +7,17 @@
 <h1>Список дисциплин</h1>
 
 
-<table>
+<table class="table">
     <thead>
-        <td>№</td>
-        <td>Название предмета</td>
-        <td>Тип контроля</td>
-        <td>Количество часов</td>
-        <td>Семестр</td>
+        <tr>
+            <th>№</th>
+            <th>Название предмета</th>
+            <th>Тип контроля</th>
+            <th>Количество часов</th>
+            <th>Семестр</th>
+        </tr>
     </thead>
-
+    <tbody>
     @foreach (var item in ViewBag.Predmets)
    {
        <tr>
@@ -26,5 +28,6 @@
            <td>@item.Semestr</td>
        </tr>
    }
+   </tbody>
 
 </table>

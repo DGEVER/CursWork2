@@ -6,15 +6,17 @@
 }
 <h1>Оценки</h1>
 
-<table>
+<table class="table">
     <thead>
-        <td>№</td>
-        <td>Фамилия</td>
-        <td>Имя</td>
-        <td>Отчество</td>
-        <td>Оценка</td>
+        <tr>
+            <th>№</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+            <th>Оценка</th>
+        </tr>
     </thead>
-
+    <tbody>
     @foreach (var it in @ViewBag.Course)
    {
        <tr>
@@ -32,4 +34,5 @@
            }
        </tr>
    }
+   </tbody>
 </table>

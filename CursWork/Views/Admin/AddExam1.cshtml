@@ -3,21 +3,29 @@
 *@
 @{
 }
-<form asp-action="AddExam2" asp-controller="Admin">
-    <div class="form-group">
+<link rel="stylesheet" href="~/css/form.css" />
+<link rel="stylesheet" href="~/css/addAdmin.css" />
 
-   <p><select name="id">
+<form asp-action="AddExam2" asp-controller="Admin">
+    <ul class="wrapper">
+
+   <li class="form-row">
+       <label>Выберите дисциплину</label>
+       <select name="id">
         <option disabled>Выберите дисциплину</option>
         @foreach (var item in ViewBag.UPlanUnit)
        {
            <option value="@item.ID">@item.NameGroup @item.NameType @item.NamePredmet @item.NameTeacher</option>
        }
-   </select></p>
+       </select>
+   </li>
 
-   <p>
+   <li class="form-row">
    <label>Выберите дату экзамена</label>
    <input type="date" name="dateEx"/>
-   </p>
-        <input type="submit" value="Отправить" class="btn btn-default" />
-    </div>
+   </li>
+   <li>
+        <input type="submit" value="Отправить" class="btn" />
+    </li>
+    </ul>
 </form>

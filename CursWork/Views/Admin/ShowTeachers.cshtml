@@ -5,14 +5,16 @@
     int i = 0;
 }
 <h1>Список всех преподавателей</h1>
-<table>
+<table class="table">
     <thead>
-        <td>№</td>
-        <td>Фамилия</td>
-        <td>Имя</td>
-        <td>Отчество</td>
+        <tr>
+            <th>№</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+        </tr>
     </thead>
-
+    <tbody>
     @foreach (var item in ViewBag.Teachers)
    {
        <tr>
@@ -22,4 +24,5 @@
            <td>@item.SecondName</td>
        </tr>
    }
+   </tbody>
 </table>

@@ -87,6 +87,7 @@ namespace CursWork.Controllers
         }
         public IActionResult Grade()
         {
+            int id = Convert.ToInt32(HttpContext.Session.GetString("id"));
             var grade = from Uspevaemost in db.Uspevaemosts
                         join Student in db.Students on Uspevaemost.IdStudentNavigation.IdStudent equals Student.IdStudent
                         join Exam in db.Exams on Uspevaemost.IdExamNavigation.IdExam equals Exam.IdExam
@@ -94,6 +95,7 @@ namespace CursWork.Controllers
                         join Predmet in db.Predmets on UplanUnit.IdPredmetNavigation.IdPredmet equals Predmet.IdPredmet
                         join Teacher in db.Teachers on UplanUnit.IdTeacherNavigation.IdTeacher equals Teacher.IdTeacher
                         join TypeOfControl in db.TypeOfControls on UplanUnit.IdTypeOfControlNavigation.IdTypeOfControl equals TypeOfControl.IdTypeOfControl
+                        where Uspevaemost.IdStudent == id
                         select new
                         {
                             Date = Exam.Date.ToShortDateString(),
@@ -116,6 +118,7 @@ namespace CursWork.Controllers
 
         public IActionResult GradeSearch(string namePredmet)
         {
+            int id = Convert.ToInt32(HttpContext.Session.GetString("id"));
             var grade = from Uspevaemost in db.Uspevaemosts
                         join Student in db.Students on Uspevaemost.IdStudentNavigation.IdStudent equals Student.IdStudent
                         join Exam in db.Exams on Uspevaemost.IdExamNavigation.IdExam equals Exam.IdExam
@@ -123,6 +126,7 @@ namespace CursWork.Controllers
                         join Predmet in db.Predmets on UplanUnit.IdPredmetNavigation.IdPredmet equals Predmet.IdPredmet
                         join Teacher in db.Teachers on UplanUnit.IdTeacherNavigation.IdTeacher equals Teacher.IdTeacher
                         join TypeOfControl in db.TypeOfControls on UplanUnit.IdTypeOfControlNavigation.IdTypeOfControl equals TypeOfControl.IdTypeOfControl
+                        where Uspevaemost.IdStudent == id
                         select new
                         {
                             Date = Exam.Date.ToShortDateString(),

@@ -5,12 +5,14 @@
     int i = 0;
 }
 <h1>Список всех групп</h1>
-<table>
+<table class="table">
     <thead>
-        <td>№</td>
-        <td>Название группы</td>
+        <tr>
+        <th>№</th>
+        <th>Название группы</th>
+        </tr>
     </thead>
-
+    <tbody>
     @foreach (var item in ViewBag.Groups)
    {
        <tr>
@@ -18,4 +20,5 @@
            <td><a href="~/Admin/ShowStudent?id=@item.IdGroup">@item.GroupName</a></td>
        </tr>
    }
+   </tbody>
 </table>

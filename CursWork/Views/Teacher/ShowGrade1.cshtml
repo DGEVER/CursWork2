@@ -6,14 +6,16 @@
 }
 <h1>Выберите нужный предмет и группу</h1>
 
-<table>
+<table class="table">
     <thead>
-        <td>№</td>
-        <td>Название предмета</td>
-        <td>Группа</td>
-        <td>Выбор</td>
+        <tr>
+        <th>№</th>
+        <th>Название предмета</th>
+        <th>Группа</th>
+        <th>Выбор</th>
+        </tr>
     </thead>
-
+    <tbody>
     @foreach (var it in @ViewBag.GP)
    {
        <tr>
@@ -23,5 +25,5 @@
            <td><a href="~/Teacher/ShowGrade2?id=@it.Id">=></a></td>
        </tr>
    }
-
+   </tbody>
 </table>

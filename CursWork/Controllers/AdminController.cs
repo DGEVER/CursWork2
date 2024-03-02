@@ -52,6 +52,9 @@ namespace CursWork.Controllers
 
         public IActionResult Mainpage_Admin()
         {
+            string type = HttpContext.Session.GetString("type");
+            if (type != "admin") return RedirectToAction("Index", "Home");
+
             _logger.LogInformation("Открытие страницы: Mainpage_Admin");
             return View();
         }
@@ -77,7 +80,38 @@ namespace CursWork.Controllers
 
             return View();
         }
+        public IActionResult ShowInfoAboutStudent([FromQuery(Name = "id")] int id_student)
+        {
+            var cur_student = (from Student in db.Students where Student.IdStudent == id_student select Student).First();
+            string nameGroup = (from Group in db.Groups where Group.IdGroup == cur_student.IdGroup select Group.GroupName).First();
 
+            //Подготовка файла
+            System.IO.File.Delete("OutputFile.docx");
+            System.IO.File.Copy("TemplateInfoAboutStudent.docx", "OutputFile.docx");
+            var valuesToFile = new Content(
+                new FieldContent("firstName", cur_student.Surname),
+                new FieldContent("name", cur_student.Name),
+                new FieldContent("secondName", cur_student.SecondName),
+                new FieldContent("year", cur_student.YearOfAppl),
+                new FieldContent("group", nameGroup),
+                new FieldContent("number", cur_student.ContactNumber),
+                new FieldContent("email", cur_student.ContactEmail),
+                new FieldContent("city", cur_student.City),
+                new FieldContent("street", cur_student.Street),
+                new FieldContent("house", cur_student.House),
+                new FieldContent("flat", cur_student.Flat)
+                );
+            using (var ouputDocumet = new TemplateProcessor("OutputFile.docx").SetRemoveContentControls(true))
+            {
+                ouputDocumet.FillContent(valuesToFile);
+                ouputDocumet.SaveChanges();
+            }
+
+            _logger.LogInformation("Открытие страницы: ShowInfoAboutStudent");
+            ViewBag.Student = cur_student;
+            ViewBag.NameGroup = nameGroup;
+            return View();
+        }
         public IActionResult ShowStudent([FromQuery(Name = "id")] int id_group)
         {
             string nameGroup = db.Groups.Where(p => p.IdGroup == id_group).Select(p => p.GroupName).FirstOrDefault();
@@ -170,7 +204,7 @@ namespace CursWork.Controllers
             catch (Exception ex)
             {
                 transaction.Rollback();
-                _logger.LogError("Ошибка при добавлении данных");
+                _logger.LogError("Ошибка при добавлении данных" + ex.Message);
             }
 
             _logger.LogInformation("Открытие страницы: AddGroup2");

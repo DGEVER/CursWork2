@@ -1,0 +1,60 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<link rel="stylesheet" href="~/css/form.css" />
+<link rel="stylesheet" href="~/css/addAdmin.css" />
+<h1>Информация о студенте</h1>
+<form asp-action="GetFileClient" asp-controller="Admin">
+    <div class="form-group">
+        <input type="hidden" value="@ViewBag.ID" name="id" />
+        <input type="submit" value="Распечатать" class="btn btn-default" />
+    </div>
+</form>
+<table cellspacing=13 >
+    <tr>
+        <td>Фамилия</td>
+        <td>@ViewBag.Student.Surname</td>
+    </tr>
+    <tr>
+        <td>Имя</td>
+        <td>@ViewBag.Student.Name</td>
+    </tr>
+    <tr>
+        <td>Отчество</td>
+        <td>@ViewBag.Student.SecondName</td>
+    </tr>
+    <tr>
+        <td>Год поступления</td>
+        <td>@ViewBag.Student.YearOfAppl</td>
+    </tr>
+    <tr>
+        <td>Группа</td>
+        <td>@ViewBag.NameGroup</td>
+    </tr>
+    <tr>
+        <td>Номер телефона</td>
+        <td>@ViewBag.Student.ContactNumber</td>
+    </tr>
+    <tr>
+        <td>Электронный адрес</td>
+        <td>@ViewBag.Student.ContactEmail</td>
+    </tr>
+    <tr>
+        <td>Город</td>
+        <td>@ViewBag.Student.City</td>
+    </tr>
+    <tr>
+        <td>Улица</td>
+        <td>@ViewBag.Student.Street</td>
+    </tr>
+    <tr>
+        <td>Дом</td>
+        <td>@ViewBag.Student.House</td>
+    </tr>
+    <tr>
+        <td>Квартира</td>
+        <td>@ViewBag.Student.Flat</td>
+    </tr>
+</table>

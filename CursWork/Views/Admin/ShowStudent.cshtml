@@ -25,7 +25,7 @@
     @foreach (var item in ViewBag.Students)
    {
        <tr>
-           <td>@(i = i + 1)</td>
+           <td>><a href="~/Admin/ShowInfoAboutStudent?id=@item.IdStudent">@(i = i + 1)</a></td>
            <td>@item.Surname</td>
            <td>@item.Name</td>
            <td>@item.SecondName</td>

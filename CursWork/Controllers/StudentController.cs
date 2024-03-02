@@ -95,7 +95,8 @@ namespace CursWork.Controllers
                         join Predmet in db.Predmets on UplanUnit.IdPredmetNavigation.IdPredmet equals Predmet.IdPredmet
                         join Teacher in db.Teachers on UplanUnit.IdTeacherNavigation.IdTeacher equals Teacher.IdTeacher
                         join TypeOfControl in db.TypeOfControls on UplanUnit.IdTypeOfControlNavigation.IdTypeOfControl equals TypeOfControl.IdTypeOfControl
-                        where Uspevaemost.IdStudent == id
+                        //where Uspevaemost.IdStudent == id
+                        where Student.IdUser == id
                         select new
                         {
                             Date = Exam.Date.ToShortDateString(),
@@ -126,7 +127,7 @@ namespace CursWork.Controllers
                         join Predmet in db.Predmets on UplanUnit.IdPredmetNavigation.IdPredmet equals Predmet.IdPredmet
                         join Teacher in db.Teachers on UplanUnit.IdTeacherNavigation.IdTeacher equals Teacher.IdTeacher
                         join TypeOfControl in db.TypeOfControls on UplanUnit.IdTypeOfControlNavigation.IdTypeOfControl equals TypeOfControl.IdTypeOfControl
-                        where Uspevaemost.IdStudent == id
+                        where Student.IdUser == id
                         select new
                         {
                             Date = Exam.Date.ToShortDateString(),

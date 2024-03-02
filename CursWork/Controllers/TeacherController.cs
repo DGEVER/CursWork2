@@ -112,6 +112,8 @@ namespace CursWork.Controllers
         }
         public IActionResult Mainpage_Teacher()
         {
+            string type = HttpContext.Session.GetString("type");
+            if (type != "teacher") return RedirectToAction("Index", "Home");
             int id = Convert.ToInt32(HttpContext.Session.GetString("id"));
             var teacher = from Teacher in db.Teachers
                           join User in db.Users on Teacher.IdUserNavigation.IdUser equals User.IdUser
@@ -193,6 +195,7 @@ namespace CursWork.Controllers
                         join UplanUnit in db.UplanUnits on Exam.IdPlanUnitNavigation.IdUplanUnit equals UplanUnit.IdUplanUnit
                         join Student in db.Students on Uspevaemost.IdStudentNavigation.IdStudent equals Student.IdStudent
                         where UplanUnit.IdUplanUnit == Id
+                        orderby Student.Surname
                         select new
                         {
                             Surname = Student.Surname,
